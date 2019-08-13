@@ -8,7 +8,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('active', 'in_stock', 'date_updated')
     list_editable = ('in_stock', )
     search_fields = ('name',)
-    prepopulated_fields = {"slug": ("name",)}
+    prepopulated_fields = {"slug": ("name",)}   
+    autocomplete_fields = ('tags',)
 
 admin.site.register(models.Product, ProductAdmin)
 
@@ -17,7 +18,6 @@ class ProductTagAdmin(admin.ModelAdmin):
     list_filter = ('active',)
     search_fields = ('name',)
     prepopulated_fields = {"slug": ("name",)}
-    autocomplete_fields = ('products',)
 
 admin.site.register(models.ProductTag, ProductTagAdmin)
 
