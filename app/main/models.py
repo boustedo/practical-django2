@@ -9,6 +9,7 @@ class ProductTag(models.Model):
     slug = models.SlugField(max_length=48)
     description = models.TextField(blank=True)
     active = models.BooleanField(default=True)
+
     objects = ProductTagManager()
 
     def __str__(self):
@@ -16,6 +17,12 @@ class ProductTag(models.Model):
 
     def natural_key(self):
         return (self.slug,)
+
+
+class ActiveManager(models.Manager):
+    def active(self):
+        return self.filter(active=True)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=32)
@@ -26,6 +33,8 @@ class Product(models.Model):
     in_stock = models.BooleanField(default=True)
     date_updated = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(ProductTag, blank=True)
+
+    objects = ActiveManager()
 
     def __str__(self):
         return self.name
