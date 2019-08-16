@@ -10,10 +10,7 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 
 RUN set -ex \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get purge -y --auto-remove $buildDeps \
-       $(! command -v gpg > /dev/null || echo 'gnupg dirmngr') \
-    && rm -rf /var/lib/apt/lists/*
+    && pip install --no-cache-dir -r requirements.txt
 
 # COPY ./Pipfile /usr/src/app/Pipfile
 # RUN pipenv install --skip-lock --system --dev
