@@ -1,5 +1,4 @@
-# pull official base image
-FROM python:3.7-alpine
+FROM boustedo/django:2.2-slim-buster
 
 # set work directory
 WORKDIR /usr/src/app
@@ -8,20 +7,16 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add postgresql-dev \
-    && pip install psycopg2 \
-    && apk add jpeg-dev zlib-dev \
-    && pip install Pillow \
-    && apk del build-deps
+COPY requirements.txt .
 
-# install dependencies
-RUN pip install --upgrade pip
-RUN pip install pipenv
-COPY ./Pipfile /usr/src/app/Pipfile
-RUN pipenv install --skip-lock --system --dev
+RUN set -ex \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y --auto-remove $buildDeps \
+       $(! command -v gpg > /dev/null || echo 'gnupg dirmngr') \
+    && rm -rf /var/lib/apt/lists/*
+
+# COPY ./Pipfile /usr/src/app/Pipfile
+# RUN pipenv install --skip-lock --system --dev
 
 # copy entrypoint.sh
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh

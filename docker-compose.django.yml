@@ -1,0 +1,6 @@
+version: '3.7'
+
+services:
+  django:
+    build: ./django
+    image: boustedo/django:2.2-slim-buster
