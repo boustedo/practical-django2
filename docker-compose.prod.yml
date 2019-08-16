@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  web:
+    build: 
+      context: ./app
+      dockerfile: Dockerfile.prod
+    command: gunicorn booktime.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/mediafiles
+    expose:
+      - 8000
+    environment:
+      - DEBUG=0
+      - SECRET_KEY=foo
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=booktime_prod
+      - SQL_USER=booktime
+      - SQL_PASSWORD=booktime
+      - SQL_HOST=db
+      - SQL_PORT=5432
+      - DATABASE=postgres
+    depends_on:
+      - db
+  db:
+    image: postgres:11.5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=booktime
+      - POSTGRES_PASSWORD=booktime
+      - POSTGRES_DB=booktime_prod
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/mediafiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
